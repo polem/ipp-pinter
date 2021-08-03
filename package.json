@@ -16,6 +16,10 @@
     "unique-concat": "^0.2.2"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node": "^16.4.10",
+    "@types/once": "^1.4.0",
+    "@types/pump": "^1.1.1",
     "standard": "^5.4.1",
     "tape": "^4.2.2"
   },

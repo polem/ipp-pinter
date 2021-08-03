@@ -1,14 +1,15 @@
-'use strict'
+import { CONSTANTS as C } from 'ipp-encoder'
+import { Attribute } from './types';
+import utils from './utils';
 
-var C = require('ipp-encoder').CONSTANTS
-var utils = require('./utils')
+export default {
+  operationAttributesTag,
+  unsupportedAttributesTag,
+  printerAttributesTag,
+  jobAttributesTag
+}
 
-exports.operationAttributesTag = operationAttributesTag
-exports.unsupportedAttributesTag = unsupportedAttributesTag
-exports.printerAttributesTag = printerAttributesTag
-exports.jobAttributesTag = jobAttributesTag
-
-function operationAttributesTag (status) {
+function operationAttributesTag (status: string) {
   return {
     tag: C.OPERATION_ATTRIBUTES_TAG,
     attributes: [
@@ -19,29 +20,29 @@ function operationAttributesTag (status) {
   }
 }
 
-function unsupportedAttributesTag (attributes, requested) {
+function unsupportedAttributesTag (attributes: Attribute[] = [], requested: [] = []) {
   return {
     tag: C.UNSUPPORTED_ATTRIBUTES_TAG,
     attributes: unsupportedAttributes(attributes, requested)
   }
 }
 
-function printerAttributesTag (attributes) {
+function printerAttributesTag (attributes: Attribute[] = []) {
   return {
     tag: C.PRINTER_ATTRIBUTES_TAG,
     attributes: attributes
   }
 }
 
-function jobAttributesTag (attributes) {
+function jobAttributesTag (attributes: Attribute[] = []) {
   return {
     tag: C.JOB_ATTRIBUTES_TAG,
     attributes: attributes
   }
 }
 
-function unsupportedAttributes (attributes, requested) {
-  var supported = attributes.map(function (attr) {
+function unsupportedAttributes (attributes: Attribute[] = [], requested: [] = []) {
+  const supported = attributes.map(function (attr) {
     return attr.name
   })
 

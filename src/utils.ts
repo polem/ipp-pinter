@@ -1,19 +1,22 @@
-'use strict'
+import { CONSTANTS as C } from 'ipp-encoder'
+import Printer from './printer';
+import { Attribute } from './types';
 
-var uconcat = require('unique-concat')
-var C = require('ipp-encoder').CONSTANTS
+const uconcat = (...array: []) => Array.from(new Set(array));
 
-exports.time = time
-exports.getJobFromRequest = getJobFromRequest
-exports.getAttributesForGroup = getAttributesForGroup
-exports.getFirstValueForName = getFirstValueForName
-exports.requestedAttributes = requestedAttributes
-exports.removeStandardAttributes = removeStandardAttributes
-exports.expandAttrGroups = expandAttrGroups
+export default {
+  time,
+  getJobFromRequest,
+  getAttributesForGroup,
+  getFirstValueForName,
+  requestedAttributes,
+  removeStandardAttributes,
+  expandAttrGroups
+}
 
-var ATTR_GROUPS = ['all', 'job-template', 'job-description', 'printer-description']
+const ATTR_GROUPS = ['all', 'job-template', 'job-description', 'printer-description']
 
-var ATTR_GROUP_PRINTER_DESC = [
+const ATTR_GROUP_PRINTER_DESC = [
   'printer-uri-supported',
   'uri-security-supported',
   'uri-authentication-supported',
@@ -53,7 +56,7 @@ var ATTR_GROUP_PRINTER_DESC = [
   'pages-per-minute-color'
 ]
 
-var ATTR_GROUP_JOB_TMPL = [
+const ATTR_GROUP_JOB_TMPL = [
   'job-priority',
   'job-hold-until',
   'job-sheets',
@@ -69,7 +72,7 @@ var ATTR_GROUP_JOB_TMPL = [
   'print-quality'
 ]
 
-var ATTR_GROUP_JOB_DESC = [
+const ATTR_GROUP_JOB_DESC = [
   'job-uri',
   'job-id',
   'job-printer-uri',
@@ -102,13 +105,12 @@ var ATTR_GROUP_JOB_DESC = [
   'attributes-natural-language'
 ]
 
-function time (printer, ts) {
-  if (ts === undefined) ts = Date.now()
-  else ts = ts.getTime()
+function time(printer: Printer, date?: Date) {
+  let ts = (date === undefined) ? Date.now() : date.getTime()
   return Math.floor((ts - printer.started) / 1000)
 }
 
-function getJobFromRequest (printer, req) {
+function getJobFromRequest (printer: Printer, req) {
   var attributes = getAttributesForGroup(req, C.OPERATION_ATTRIBUTES_TAG)
   var id = getFirstValueForName(attributes, 'job-id')
   return printer.getJob(id)
@@ -119,7 +121,7 @@ function getAttributesForGroup (req, tag) {
   if (result) return result.attributes
 }
 
-function getFirstValueForName (attributes, name) {
+function getFirstValueForName (attributes: Attribute[], name) {
   var result = findOneByKey(attributes, 'name', name)
   if (result) return Array.isArray(result.value) ? result.value[0] : result.value
 }
@@ -146,7 +148,7 @@ function requestedAttributes (req) {
   return result
 }
 
-function removeStandardAttributes (attrs) {
+function removeStandardAttributes (attrs: []) {
   return attrs.filter(function (attr) {
     return ~ATTR_GROUPS.indexOf(attr) ||
       ATTR_GROUP_JOB_TMPL.indexOf(attr) ||
@@ -155,7 +157,7 @@ function removeStandardAttributes (attrs) {
   })
 }
 
-function expandAttrGroups (attrs) {
+function expandAttrGroups(attrs: []) {
   if (~attrs.indexOf('job-template')) attrs = uconcat(attrs, ATTR_GROUP_JOB_TMPL)
   if (~attrs.indexOf('job-description')) attrs = uconcat(attrs, ATTR_GROUP_JOB_DESC)
   if (~attrs.indexOf('printer-description')) attrs = uconcat(attrs, ATTR_GROUP_PRINTER_DESC)
